@@ -1,3 +1,3 @@
-from .server import run
+from .parse_args import run
 
 run()

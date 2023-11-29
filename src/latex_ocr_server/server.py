@@ -113,6 +113,7 @@ def run():
     elif hasattr(args, "gpu_available"):
         print(f"{torch.cuda.is_available()}")
     else:
+        cache_dir = args.cache_dir if args.cache_dir else "~/.cache/huggingface"
         filepath = try_to_load_from_cache(MODEL_NAME, MODEL_FILE, cache_dir=args.cache_dir)
         if not isinstance(filepath, str) and not args.download:
             # Get file size
@@ -123,7 +124,6 @@ def run():
             file_size = '{:.2f} MB'.format(int(size) / float(1 << 20))
 
             # Get cache_dir name
-            cache_dir = args.cache_dir if args.cache_dir else "~/.cache/huggingface"
             ans = input(f"Will download model ({file_size}) to {cache_dir}. Ok? (Y/n) ")
             if ans.lower() == "n":
                 quit(0)

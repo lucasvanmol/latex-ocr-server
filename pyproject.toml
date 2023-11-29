@@ -1,0 +1,157 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "latex-ocr-server"
+dynamic = ["version"]
+description = 'Turn image files into LaTeX equations with protocol buffers'
+readme = "README.md"
+requires-python = ">=3.7"
+license = "MIT"
+keywords = []
+authors = [{ name = "Lucas Van Mol" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "torch~=2.1.0",
+  # "torch~=2.1.0; sys_platform != 'linux'",
+  # "torch @ https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.1.1%2Bcpu.cxx11.abi-cp39-cp39-linux_x86_64.whl#sha256=e24554b239d2ce281a754d3bc0936222f992b9958745a9d1dbd25aafcc240944 ; sys_platform == 'linux'",
+  "transformers~=4.35.1",
+  "Pillow~=10.1.0",
+  "grpcio~=1.59.2",
+  "google-api-python-client~=2.107.0",
+]
+
+# This is super slow. Let user download gpu versions themselves?
+# [project.optional-dependencies]
+# gpu = [
+#   "torch @ https://download.pytorch.org/whl/cu118/torch-2.1.1%2Bcu118-cp39-cp39-win_amd64.whl#sha256=c883a237149b3435af3b4f544f990dc946c428fd531a9d14be0407ee2112b581 ; sys_platform == 'win32'",
+#   "torch @ https://download.pytorch.org/whl/cu118/torch-2.1.1%2Bcu118-cp39-cp39-linux_x86_64.whl#sha256=ef6b03bd3ec6a12c5baf50b6c178f94ed48cbcbaafee66e8273f65f41a773e7c ; sys_platform == 'linux'",
+# ]
+
+[project.urls]
+Documentation = "https://github.com/lucasvanmol/latex-ocr-server#readme"
+Issues = "https://github.com/lucasvanmol/latex-ocr-server/issues"
+Source = "https://github.com/lucasvanmol/latex-ocr-server"
+
+[tool.hatch.version]
+path = "src/latex_ocr_server/__about__.py"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.envs.default]
+dependencies = ["coverage[toml]>=6.5", "pytest"]
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = ["- coverage combine", "coverage report"]
+cov = ["test-cov", "cov-report"]
+
+[tool.hatch.envs.test]
+python = "3.9"
+run-coverage = "pytest --cov-config=pyproject.toml --cov=pkg --cov=tests"
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.7", "3.8", "3.9", "3.10", "3.11"]
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:src/latex_ocr_server tests}"
+style = ["ruff {args:.}", "black --check --diff {args:.}"]
+fmt = ["black {args:.}", "ruff --fix {args:.}", "style"]
+all = ["style", "typing"]
+
+[tool.black]
+target-version = ["py37"]
+line-length = 120
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py37"
+line-length = 120
+select = [
+  "A",
+  "ARG",
+  "B",
+  "C",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105",
+  "S106",
+  "S107",
+  # Ignore complexity
+  "C901",
+  "PLR0911",
+  "PLR0912",
+  "PLR0913",
+  "PLR0915",
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.isort]
+known-first-party = ["latex_ocr_server"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252"]
+
+[tool.coverage.run]
+source_pkgs = ["latex_ocr_server", "tests"]
+branch = true
+parallel = true
+omit = ["src/latex_ocr_server/__about__.py"]
+
+[tool.coverage.paths]
+latex_ocr_server = [
+  "src/latex_ocr_server",
+  "*/latex-ocr-server/src/latex_ocr_server",
+]
+tests = ["tests", "*/latex-ocr-server/tests"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]

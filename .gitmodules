@@ -1,3 +1,4 @@
 [submodule "nougat-latex-ocr"]
 	path = src/latex_ocr_server/nougat_latex_ocr
 	url = https://github.com/NormXU/nougat-latex-ocr
+	ignore = untracked

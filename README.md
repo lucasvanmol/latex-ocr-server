@@ -7,10 +7,8 @@ See the [`.proto` file](https://github.com/lucasvanmol/latex-ocr-server/blob/0.1
 ## Installation
 
 ```
-pip install https://github.com/lucasvanmol/latex-ocr-server/releases/download/0.1.0/latex_ocr_server-0.1.0-py3-none-any.whl
+pip install latex-ocr-server
 ```
-
-Installation directly from pypi will be available as soon as I'm able to [make an account](https://status.python.org/incidents/0th66lc1l8by)
 
 ## Usage
 

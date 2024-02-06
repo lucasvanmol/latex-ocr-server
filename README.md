@@ -1,4 +1,6 @@
 # Latex OCR Server
+![GitHub Release](https://img.shields.io/github/v/release/lucasvanmol/latex-ocr-server) ![PyPI - Version](https://img.shields.io/pypi/v/latex-ocr-server)
+
 
 A protobuf-based service to generate latex equations from image files.
 

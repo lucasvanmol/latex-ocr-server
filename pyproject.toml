@@ -19,11 +19,13 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "torch~=2.1.0",
+  "torch~=2.1.0; python_version < '3.12'",
+  "torch~=2.2; python_version > '3.12'",
   # "torch~=2.1.0; sys_platform != 'linux'",
   # "torch @ https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.1.1%2Bcpu.cxx11.abi-cp39-cp39-linux_x86_64.whl#sha256=e24554b239d2ce281a754d3bc0936222f992b9958745a9d1dbd25aafcc240944 ; sys_platform == 'linux'",
   "transformers~=4.35.1",

@@ -5,25 +5,31 @@ from typing import ClassVar as _ClassVar, Optional as _Optional
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class LatexRequest(_message.Message):
-    __slots__ = ["image_path"]
+    __slots__ = ("image_path",)
     IMAGE_PATH_FIELD_NUMBER: _ClassVar[int]
     image_path: str
     def __init__(self, image_path: _Optional[str] = ...) -> None: ...
 
+class LatexRequestBytes(_message.Message):
+    __slots__ = ("image_data",)
+    IMAGE_DATA_FIELD_NUMBER: _ClassVar[int]
+    image_data: bytes
+    def __init__(self, image_data: _Optional[bytes] = ...) -> None: ...
+
 class LatexReply(_message.Message):
-    __slots__ = ["latex"]
+    __slots__ = ("latex",)
     LATEX_FIELD_NUMBER: _ClassVar[int]
     latex: str
     def __init__(self, latex: _Optional[str] = ...) -> None: ...
 
 class ServerIsReadyReply(_message.Message):
-    __slots__ = ["is_ready"]
+    __slots__ = ("is_ready",)
     IS_READY_FIELD_NUMBER: _ClassVar[int]
     is_ready: bool
     def __init__(self, is_ready: bool = ...) -> None: ...
 
 class ServerConfig(_message.Message):
-    __slots__ = ["device", "cache_dir"]
+    __slots__ = ("device", "cache_dir")
     DEVICE_FIELD_NUMBER: _ClassVar[int]
     CACHE_DIR_FIELD_NUMBER: _ClassVar[int]
     device: str
@@ -31,5 +37,5 @@ class ServerConfig(_message.Message):
     def __init__(self, device: _Optional[str] = ..., cache_dir: _Optional[str] = ...) -> None: ...
 
 class Empty(_message.Message):
-    __slots__ = []
+    __slots__ = ()
     def __init__(self) -> None: ...

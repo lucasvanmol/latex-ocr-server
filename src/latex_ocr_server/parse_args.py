@@ -1,6 +1,7 @@
 import argparse
 import logging
 from huggingface_hub import try_to_load_from_cache, hf_hub_url
+from huggingface_hub.constants import HUGGINGFACE_HUB_CACHE
 import urllib
 from .__about__ import __version__
 
@@ -25,8 +26,14 @@ def handle_info(args):
 
 # latex_ocr_server start ...
 def handle_start(args):
+    if args.download and args.no_download:
+        raise ValueError("--download and --no-download cannot both be true")
+
     filepath = try_to_load_from_cache(MODEL_NAME, MODEL_FILE, cache_dir=args.cache_dir)
     if not isinstance(filepath, str) and not args.download:
+        if args.no_download:
+            raise FileNotFoundError(f"Model not found at {args.cache_dir}; aborting (because of --no-download)")
+        
         # Get file size
         download_path = hf_hub_url(MODEL_NAME, MODEL_FILE)
         req = urllib.request.Request(download_path, method="HEAD")
@@ -51,7 +58,8 @@ def parse_option():
     start = subparsers.add_parser("start", help='start the server')
     start.add_argument("--port", default="50051")
     start.add_argument("-d", "--download", default=False, help="download model if needed without asking for confirmation", action='store_true')
-    start.add_argument("--cache_dir", default=None, help="path to model cache. Defaults to ~/.cache/huggingface")
+    start.add_argument("--no-download", default=False, help="do not attempt to download model if not cached", action='store_true')
+    start.add_argument("--cache_dir", default=HUGGINGFACE_HUB_CACHE, help=f"path to model cache. Defaults to {HUGGINGFACE_HUB_CACHE}")
     start.add_argument("--cpu", default=False, action="store_true", help="use cpu, otherwise uses gpu if available")
     start.set_defaults(func=handle_start)
 

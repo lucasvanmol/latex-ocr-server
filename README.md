@@ -35,6 +35,19 @@ You can check if gpu support is working with
 latex_ocr_server info --gpu-available
 ```
 
+## Docker
+
+```
+docker build -t latex-ocr-server .    
+```
+
+Add a volume if you want to cache the model outside docker:
+
+```
+docker run  -p 50051:50051 -v /c/path/to/model_cache:/app/model_cache latex-ocr-server
+```
+
+
 # Development 
 
 ## Build

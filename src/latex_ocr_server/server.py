@@ -9,6 +9,7 @@ from .nougat_latex_ocr.nougat_latex import NougatLaTexProcessor
 import threading
 from concurrent import futures
 import torch
+import io
 
 class LatexOCR(latex_ocr_pb2_grpc.LatexOCRServicer):
     def __init__(self, model, cache_dir, device):
@@ -29,12 +30,23 @@ class LatexOCR(latex_ocr_pb2_grpc.LatexOCRServicer):
         result = self.inference(image)
         return latex_ocr_pb2.LatexReply(latex=result)
     
+    def GenerateLatexBytes(self, request, context):
+        # Convert bytes to file-like object
+        image_bytes = request.image_data
+        image = Image.open(io.BytesIO(image_bytes))
+
+        if image.mode != "RGB":
+            image = image.convert('RGB')
+
+        result = self.inference(image)
+        return latex_ocr_pb2.LatexReply(latex=result)
+    
     def IsReady(self, request, context):
         is_ready = not self.load_thread.is_alive()
         return latex_ocr_pb2.ServerIsReadyReply(is_ready=is_ready)
     
     def GetConfig(self, request, context):
-        return latex_ocr_pb2.ServerConfig(device = self.device, cache_dir=self.cache_dir)
+        return latex_ocr_pb2.ServerConfig(device=str(self.device), cache_dir=self.cache_dir)
     
     def inference(self, image):
         pixel_values = self.latex_processor(image, return_tensors="pt").pixel_values
@@ -58,12 +70,12 @@ class LatexOCR(latex_ocr_pb2_grpc.LatexOCRServicer):
 
     def load_models(self, model):
         print("Loading model...", end="", flush=True)
-        self.model = VisionEncoderDecoderModel.from_pretrained(model, cache_dir=self.cache_dir, resume_download=True).to(self.device)
+        self.model = VisionEncoderDecoderModel.from_pretrained(model, cache_dir=self.cache_dir).to(self.device)
         print(" done", flush=True)
 
         print("Loading processor...", end="", flush=True)
-        self.tokenizer = NougatTokenizerFast.from_pretrained(model, cache_dir=self.cache_dir, resume_download=True)
-        self.latex_processor = NougatLaTexProcessor.from_pretrained(model, cache_dir=self.cache_dir, resume_download=True)
+        self.tokenizer = NougatTokenizerFast.from_pretrained(model, cache_dir=self.cache_dir)
+        self.latex_processor = NougatLaTexProcessor.from_pretrained(model, cache_dir=self.cache_dir)
         print(" done", flush=True)
 
 

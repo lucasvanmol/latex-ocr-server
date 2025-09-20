@@ -40,7 +40,7 @@ class LatexOCR(latex_ocr_pb2_grpc.LatexOCRServicer):
         pixel_values = self.latex_processor(image, return_tensors="pt").pixel_values
         task_prompt = self.tokenizer.bos_token
         decoder_input_ids = self.tokenizer(task_prompt, add_special_tokens=False,
-                                    return_tensors="pt").input_ids
+                                    return_tensors="pt", padding=True).input_ids
         with torch.no_grad():
             outputs = self.model.generate(
                 pixel_values.to(self.device),
@@ -58,12 +58,12 @@ class LatexOCR(latex_ocr_pb2_grpc.LatexOCRServicer):
 
     def load_models(self, model):
         print("Loading model...", end="", flush=True)
-        self.model = VisionEncoderDecoderModel.from_pretrained(model, cache_dir=self.cache_dir, resume_download=True).to(self.device)
+        self.model = VisionEncoderDecoderModel.from_pretrained(model, cache_dir=self.cache_dir).to(self.device)
         print(" done", flush=True)
 
         print("Loading processor...", end="", flush=True)
-        self.tokenizer = NougatTokenizerFast.from_pretrained(model, cache_dir=self.cache_dir, resume_download=True)
-        self.latex_processor = NougatLaTexProcessor.from_pretrained(model, cache_dir=self.cache_dir, resume_download=True)
+        self.tokenizer = NougatTokenizerFast.from_pretrained(model, cache_dir=self.cache_dir)
+        self.latex_processor = NougatLaTexProcessor.from_pretrained(model, cache_dir=self.cache_dir)
         print(" done", flush=True)
 
 
